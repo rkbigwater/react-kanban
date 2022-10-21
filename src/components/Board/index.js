@@ -14,7 +14,9 @@ import {
   isMovingACardToAnotherPosition,
 } from './services'
 import { moveCard, moveColumn, addColumn, removeColumn, changeColumn, addCard, removeCard } from '@services/helpers'
-
+import {
+  WindowScroller
+} from "react-virtualized";
 const Columns = forwardRef((props, ref) => <div ref={ref} style={{ whiteSpace: 'nowrap' }} {...props} />)
 
 const DroppableBoard = withDroppable(Columns)
@@ -253,7 +255,47 @@ function BoardContainer({
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
       <div className='react-kanban-board'>
+        {isVirtualList ? 
+        <WindowScroller>
+        {({ height, isScrolling, registerChild, scrollTop }) => (
+          <div ref={registerChild}>
         <DroppableBoard droppableId='board-droppable' direction='horizontal' type='BOARD'>
+          {board.columns.map((column, index) => (
+            <Column
+              key={column.id}
+              index={index}
+              isVirtualList={isVirtualList}
+              width={width}
+              height={height}
+              rowHeight={rowHeight}
+              renderCard={renderCard}
+              isScrolling={isScrolling}
+              scrollTop={scrollTop}
+              renderColumnHeader={(column) =>
+                renderColumnHeader ? (
+                  renderColumnHeader(column)
+                ) : (
+                  <DefaultColumnHeader
+                    allowRemoveColumn={allowRemoveColumn}
+                    onColumnRemove={onColumnRemove}
+                    allowRenameColumn={allowRenameColumn}
+                    onColumnRename={onColumnRename}
+                  >
+                    {column}
+                  </DefaultColumnHeader>
+                )
+              }
+              disableColumnDrag={disableColumnDrag}
+              disableCardDrag={disableCardDrag}
+              onCardNew={onCardNew}
+              allowAddCard={allowAddCard}
+            >
+              {column}
+            </Column>
+          ))}
+        </DroppableBoard></div>)}
+        </WindowScroller>
+        :<DroppableBoard droppableId='board-droppable' direction='horizontal' type='BOARD'>
           {board.columns.map((column, index) => (
             <Column
               key={column.id}
@@ -285,7 +327,7 @@ function BoardContainer({
               {column}
             </Column>
           ))}
-        </DroppableBoard>
+        </DroppableBoard>}
         {renderColumnAdder()}
       </div>
     </DragDropContext>

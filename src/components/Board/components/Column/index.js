@@ -26,6 +26,8 @@ function Column({
   rowHeight,
   width,
   height,
+  isScrolling,
+  scrollTop
 }) {
   const getRowRender = (cards) => ({ index, style }) => {
     const card = cards[index]
@@ -107,6 +109,8 @@ function Column({
                               height={height}
                               rowCount={cardsCount}
                               rowHeight={rowHeight}
+                              isScrolling={isScrolling}
+                              scrollTop={scrollTop}
                               ref={(ref) => {
                                 // react-virtualized has no way to get the list's ref that I can so
                                 // So we use the `ReactDOM.findDOMNode(ref)` escape hatch to get the ref
